@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  th:replace="~{base::parent(~{::#content}, ~{::title}, ~{::script})}"
+>
+  <head>
+    <title th:text="'Guest | Update Visit Record'">
+      Add Visit Record
+    </title>
+  </head>
+  <body>
+    <div id="content">
+      
+      <div th:if="${loggedInUser != null and loggedInUser.isEmployee()}">
+        <div th:replace="~{user/empSidebar :: sidebar}"></div>
+      </div>
+
+      <div th:if="${loggedInUser != null and !loggedInUser.isEmployee()}">
+        <div th:replace="~{user/sidebar2 :: sidebar}"></div>
+      </div>
+
+      <div class="flex justify-center items-center min-h-screen p-4">
+        <div class="w-full max-w-lg p-2">
+          <div class="card block p-6 mb-20 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+              <div th:replace="~{message::messagbox}"></div>
+              
+              <h1 class="text-2xl font-semibold text-white">
+                Update Visit Record
+              </h1>
+
+              <form
+                th:action="@{'/user/visit/update/' + ${id}}"
+                method="post"
+                class="mt-5"
+                th:object="${form}"
+                novalidate
+              >
+                <div class="mb-3">
+                  <!--Scout Name-->
+                  <div>
+                    <label
+                      for="scoutName"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Scout Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="scoutName"
+                      th:field="*{scoutName}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="John Nolan"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('scoutName')}"
+                      th:errors="*{scoutName}"
+                    ></p>
+                  </div>
+                  
+                  <!--Place of Visit-->
+                  <div>
+                    <label
+                      for="placeOfVisit"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Place of Visit *</label
+                    >
+                    <input
+                      type="text"
+                      id="placeOfVisit"
+                      th:field="*{placeOfVisit}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Rohini"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('placeOfVisit')}"
+                      th:errors="*{placeOfVisit}"
+                    ></p>
+                  </div>
+                  
+                  <!--Company Name-->
+                  <div>
+                    <label
+                      for="companyName"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Company Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="companyName"
+                      th:field="*{companyName}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Accounts Bureau"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('companyName')}"
+                      th:errors="*{companyName}"
+                    ></p>
+                  </div>
+                  
+                  <!--New Or Revisit - Convert to Select-->
+                  <div>
+                    <label
+                      for="newOrRevisit"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >New Or Revisit *</label
+                    >
+                    <select
+                      id="newOrRevisit"
+                      th:field="*{newOrRevisit}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                      <option value="">-- Select --</option>
+                      <option value="New">New</option>
+                      <option value="Revisit">Revisit</option>
+                    </select>
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('newOrRevisit')}"
+                      th:errors="*{newOrRevisit}"
+                    ></p>
+                  </div>
+                  
+                  <!--Contact Person Name-->
+                  <div>
+                    <label
+                      for="contactPersonName"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Contact Person Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="contactPersonName"
+                      th:field="*{contactPersonName}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Munish Gagneja"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('contactPersonName')}"
+                      th:errors="*{contactPersonName}"
+                    ></p>
+                  </div>
+                  
+                  <!--Contact Number-->
+                  <div>
+                    <label
+                      for="contactNumber"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Contact Person Number *</label
+                    >
+                    <input
+                      type="text"
+                      id="contactNumber"
+                      th:field="*{contactNumber}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="9999999999"
+                      pattern="[0-9]{10}"
+                      title="Please enter exactly 10 digits"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('contactNumber')}"
+                      th:errors="*{contactNumber}"
+                    ></p>
+                  </div>
+
+                  <!--Nature of Business-->
+                  <div>
+                    <label
+                      for="natureOfBusiness"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Nature of Business *</label
+                    >
+                    <input
+                      type="text"
+                      id="natureOfBusiness"
+                      th:field="*{natureOfBusiness}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Trading, Manufacturing, etc."
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('natureOfBusiness')}"
+                      th:errors="*{natureOfBusiness}"
+                    ></p>
+                  </div>
+
+                  <!--Checkboxes-->
+                  <div class="grid grid-cols-2 gap-4 mb-4"> 
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        th:field="*{computer}"
+                        class="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        id="computer"
+                      />
+                      <label
+                        for="computer"
+                        class="ms-2 text-sm font-medium text-white"
+                        >Computer</label
+                      >
+                    </div>
+
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        th:field="*{tally}"
+                        class="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        id="tally"
+                      />
+                      <label
+                        for="tally"
+                        class="ms-2 text-sm font-medium text-white"
+                        >Tally</label
+                      >
+                    </div>
+
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        th:field="*{revisitRequired}"
+                        class="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        id="revisitRequired"
+                      />
+                      <label
+                        for="revisitRequired"
+                        class="ms-2 text-sm font-medium text-white"
+                        >Revisit Required</label
+                      >
+                    </div>
+
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        th:field="*{agreedForDemo}"
+                        class="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        id="agreedForDemo"
+                      />
+                      <label
+                        for="agreedForDemo"
+                        class="ms-2 text-sm font-medium text-white"
+                        >Agreed For Demo</label
+                      >
+                    </div>
+                  </div>
+
+                  <!--Last Upgrade - REMOVE REQUIRED-->
+                  <div>
+                    <label
+                      for="lastUpgrade"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Last Upgrade (Optional)</label
+                    >
+                    <input
+                      type="date"
+                      id="lastUpgrade"
+                      th:field="*{lastUpgrade}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
+                  </div>
+
+                  <!--Opportunity - Convert to Select-->
+                  <div>
+                    <label
+                      for="opportunity"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                      >Opportunity</label
+                    >
+                    <select
+                      id="opportunity"
+                      th:field="*{opportunity}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                      <option value="">-- Select Opportunity --</option>
+                      <option value="None">None</option>
+                      <option value="New license">New license</option>
+                      <option value="Upgrade">Upgrade</option>
+                      <option value="TSS">TSS</option>
+                      <option value="Service">Service</option>
+                      <option value="Customization">Customization</option>
+                    </select>
+                  </div>
+
+                  <!-- Dynamic Custom Fields -->
+                  <div id="customFieldsContainer" class="mb-3"></div>
+
+                  <!-- Add Field Button -->
+                  <div class="mb-3">
+                    <button
+                      type="button"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                      onclick="addCustomField()"
+                    >
+                      + Add Custom Field
+                    </button>
+                  </div>
+
+                  <div class="button-container text-center mt-5">
+                    <button class="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium" type="submit">
+                      Update Visit Record
+                    </button>
+                  </div>
+                </div>
+              </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      console.log("Add visit record page script loaded");
+    </script>
+    <script>
+      let fieldCount = 0;
+
+      function addCustomField() {
+          fieldCount++;
+          const container = document.getElementById("customFieldsContainer");
+
+          const fieldDiv = document.createElement("div");
+          fieldDiv.classList.add("mb-3", "border", "p-3", "rounded-lg", "bg-gray-100");
+          fieldDiv.setAttribute("data-field-id", fieldCount);
+
+          fieldDiv.innerHTML = `
+              <label class="block mb-2 text-sm font-medium text-gray-900">Custom Field Label</label>
+              <input type="text" name="customLabels[]" placeholder="Enter field label" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full"/>
+
+              <label class="block mb-2 text-sm font-medium text-gray-900">Custom Field Value</label>
+              <input type="text" name="customValues[]" placeholder="Enter field value" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full"/>
+
+              <button type="button" class="bg-red-500 text-white px-2 py-1 rounded" onclick="removeCustomField(${fieldCount})">Remove</button>
+          `;
+
+          container.appendChild(fieldDiv);
+      }
+
+      function removeCustomField(id) {
+          const fieldDiv = document.querySelector(`[data-field-id='${id}']`);
+          if (fieldDiv) fieldDiv.remove();
+      }
+    </script>
+  </body>
+</html>

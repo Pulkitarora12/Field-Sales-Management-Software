@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  th:fragment="parent(content, title, script)"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:replace="${title}">SMS</title>
+    <link th:href="@{'/output.css'}" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+      <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{'css/style.css'}" />
+  </head>
+  <body class="bg-gray-900">
+    <!--handeling navbar-->
+
+    <!--user logged in ?-->
+    <div th:if="${loggedInUser != null and loggedInUser.enabled}">
+      <div th:replace="~{user/userNavbar :: user-navbar}"></div>
+    </div>
+
+    <!-- Not logged in OR not verified -->
+    <div th:unless="${loggedInUser != null and loggedInUser.enabled}">
+      <div th:replace="~{navbar :: navbar}"></div>
+    </div>
+
+    <div class="pt-20">
+      <section th:replace="${content}"></section>
+    </div>
+
+
+    <!-- flow-bite content -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <th:block th:replace="${script}"></th:block>
+  </body>
+</html>

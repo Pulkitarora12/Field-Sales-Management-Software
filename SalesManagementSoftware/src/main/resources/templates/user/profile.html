@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  th:replace="~{base::parent(~{::#main-content}, ~{::title}, ~{::script})}"
+>
+  <head>
+    <title
+      th:text="${loggedInUser != null ? loggedInUser.name + ' | CRM' : 'Profile Page'}"
+    >
+      Profile Page
+    </title>
+  </head>
+  <body>
+    <div id="main-content">
+      <div th:if="${loggedInUser != null and loggedInUser.isEmployee()}">
+        <div th:replace="~{user/empSidebar :: sidebar}"></div>
+      </div>
+
+      <div th:if="${loggedInUser != null and !loggedInUser.isEmployee()}">
+        <div th:replace="~{user/sidebar2 :: sidebar}"></div>
+      </div>
+
+      <div
+        id="profile-content"
+        class="sm:pl-66 pt-10 pt-20 flex flex-col text-center"
+      >
+        <div class="flex justify-center flex-col items-center">
+          <!-- Profile Card -->
+          <div
+            class="max-w-4xl mx-auto shadow-xl rounded-2xl p-6 sm:p-8 mt-10 bg-gray-800"
+          >
+            <div
+              class="flex flex-col sm:flex-row items-center sm:items-start gap-6"
+            >
+              <!-- Profile Picture -->
+              <img
+                th:src="'/images/1630498303816.jpeg'"
+                alt="Profile"
+                class="w-32 h-32 rounded-full object-cover border-4 border-indigo-500 shadow-sm"
+              />
+
+              <!-- Info Section -->
+              <div
+                th:if="${loggedInUser != null}"
+                class="flex-1 space-y-3 sm:text-left"
+              >
+                <h2
+                  class="text-2xl font-bold text-gray-600"
+                  th:text="${loggedInUser.name != null ? loggedInUser.name : 'Unknown'}"
+                >
+                  Pulkit Arora
+                </h2>
+
+                <p class="text-gray-600">
+                  <span class="font-medium">Email:</span>
+                  <span
+                    class="font-medium"
+                    th:text="${loggedInUser.email != null ? loggedInUser.email : 'N/A'}"
+                    >Email</span
+                  >
+                </p>
+                <p class="text-gray-600">
+                  <span class="font-medium">Phone:</span>
+                  <span
+                    class="font-medium"
+                    th:text="${loggedInUser.phoneNumber != null ? loggedInUser.phoneNumber : 'N/A'}"
+                    >Phone</span
+                  >
+                </p>
+                <p class="text-gray-600">
+                  <span class="font-medium">About:</span>
+                  <span
+                    class="font-medium"
+                    th:text="${loggedInUser.about != null ? loggedInUser.about : 'N/A'}"
+                    >About</span
+                  >
+                </p>
+
+                <p class="text-gray-600">
+                  <span class="font-medium">Role:</span>
+                  <span
+                    class="font-medium"
+                    th:text="${loggedInUser.role != null ? loggedInUser.role : 'N/A'}"
+                    >Role</span
+                  >
+                </p>
+
+                <p class="text-gray-600">
+                  <span class="font-medium">Provider:</span>
+                  <span
+                    th:text="${loggedInUser.provider != null ? loggedInUser.provider : 'N/A'}"
+                    >Provider</span
+                  >
+                </p>
+
+                <!-- Badges -->
+                <div class="flex flex-wrap gap-2 sm:justify-start">
+                  <span
+                    th:if="${loggedInUser.emailVerified}"
+                    class="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full"
+                  >
+                    Email Verified
+                  </span>
+
+                  <span
+                    th:if="${loggedInUser != null && !loggedInUser.emailVerified}"
+                    class="bg-green-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full"
+                  >
+                    Email Not Verified
+                  </span>
+
+                  <span
+                    th:if="${loggedInUser != null && (loggedInUser.enabled == false or loggedInUser.enabled == 0)}"
+                    class="bg-green-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-full"
+                  >
+                    Account Not Enabled
+                  </span>
+
+                  <span
+                    th:if="${loggedInUser != null && (loggedInUser.enabled == true or loggedInUser.enabled == 1)}"
+                    class="bg-green-100 text-green-700 text-sm font-semibold px-3 py-1 rounded-full"
+                  >
+                    Account Enabled
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      console.log("Profile page script loaded");
+    </script>
+  </body>
+</html>

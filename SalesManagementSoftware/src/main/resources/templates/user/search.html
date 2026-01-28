@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  th:replace="~{base::parent(~{::#content}, ~{::title}, ~{::script})}"
+>
+  <head>
+    <title th:text="${loggedInUser.name} + ' | Search Visit Records'">
+      Search Visit Records Page
+    </title>
+  </head>
+  <body>
+    <div id="content">
+      <div th:if="${loggedInUser != null and loggedInUser.isEmployee()}">
+        <div th:replace="~{user/empSidebar :: sidebar}"></div>
+      </div>
+
+      <div th:if="${loggedInUser != null and !loggedInUser.isEmployee()}">
+        <div th:replace="~{user/sidebar2 :: sidebar}"></div>
+      </div>
+
+      <div class="pt-5 flex flex-col text-center pl-1 lg:pl-66">
+        <h1 class="text-amber-50 text-5xl">Search Results</h1>
+        <p
+          class="text-amber-50"
+          th:text="${pageVisitRecord.totalElements} + ' Results found'"
+        ></p>
+
+        <div class="visits_container p-5">
+          <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <!-- Search Form -->
+            <div class="flex justify-center">
+              <form th:action="@{'/user/visit/search'}">
+                <div
+                  class="flex items-center justify-start gap-2 flex-wrap md:flex-nowrap pb-4 bg-white dark:bg-gray-900"
+                >
+                  <!-- Dropdown -->
+                  <div>
+                    <select
+                      name="field"
+                      id="field_select"
+                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                      <option selected>Select Field</option>
+                      <option value="scoutName">Scout Name</option>
+                      <option value="companyName">Company Name</option>
+                      <option value="contactPersonName">Contact Person</option>
+                      <option value="placeOfVisit">Place of Visit</option>
+                      <option value="newOrRevisit">New Or Revisit</option>
+                      <option value="contactNumber">Contact Number</option>
+                      <option value="natureOfBusiness">
+                        Nature of Business
+                      </option>
+                      <option value="computer">Computer</option>
+                      <option value="tally">Tally</option>
+                      <option value="opportunity">Opportunity</option>
+                      <option value="revisitRequired">Revisit Required</option>
+                      <option value="agreedForDemo">Agreed for Demo</option>
+                    </select>
+                  </div>
+
+                  <!-- Search Input -->
+                  <div class="relative">
+                    <div
+                      class="absolute inset-y-0 left-0 flex items-center ps-3 pointer-events-none"
+                    >
+                      <svg
+                        class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      name="keyword"
+                      type="text"
+                      id="table-search-visits"
+                      th:value="${keyword}"
+                      class="p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="Search for visit records"
+                    />
+                  </div>
+
+                  <!-- Search Button -->
+                  <div>
+                    <button
+                      type="submit"
+                      class="px-2 py-1.5 rounded-lg bg-blue-700 text-white"
+                    >
+                      Search
+                    </button>
+                  </div>
+
+                  <!-- Export Button -->
+                  <div>
+                    <button
+                      type="button"
+                      onclick="exportData()"
+                      class="flex items-center px-2 py-1.5 rounded-lg bg-blue-700 text-white"
+                    >
+                      Export
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Visit Table -->
+            <table
+              id="visit_table"
+              class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+            >
+              <thead
+                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+              >
+                <!-- same table headers as original page -->
+                <tr>
+                  <th class="px-6 py-3">ID</th>
+                  <th class="px-6 py-3">Scout Name</th>
+                  <th class="px-6 py-3">Place of Visit</th>
+                  <th class="px-6 py-3">Company Name</th>
+                  <th class="px-6 py-3">New/Revisit</th>
+                  <th class="px-6 py-3">Contact Person</th>
+                  <th class="px-6 py-3">Contact Number</th>
+                  <th class="px-6 py-3">Nature of Business</th>
+                  <th class="px-6 py-3">Computer</th>
+                  <th class="px-6 py-3">Tally</th>
+                  <th class="px-6 py-3">Last Upgrade</th>
+                  <th class="px-6 py-3">Opportunity</th>
+                  <th class="px-6 py-3">Revisit Required</th>
+                  <th class="px-6 py-3">Agreed for Demo</th>
+                  <th class="px-6 py-3">Date Filled</th>
+                  <th class="px-6 py-3">Employee</th>
+                  <th class="px-6 py-3">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="v : ${pageVisitRecord.content}">
+                  <td class="px-6 py-4" th:text="${v.id}"></td>
+                  <td class="px-6 py-4" th:text="${v.scoutName}"></td>
+                  <td class="px-6 py-4" th:text="${v.placeOfVisit}"></td>
+                  <td class="px-6 py-4" th:text="${v.companyName}"></td>
+                  <td class="px-6 py-4" th:text="${v.newOrRevisit}"></td>
+                  <td class="px-6 py-4" th:text="${v.contactPersonName}"></td>
+                  <td
+                    class="px-6 py-4"
+                    th:text="${v.contactNumber ?: 'N/A'}"
+                  ></td>
+                  <td
+                    class="px-6 py-4"
+                    th:text="${v.natureOfBusiness ?: 'N/A'}"
+                  ></td>
+                  <td class="px-6 py-4">
+                    <span th:text="${v.computer} ? 'Yes' : 'No'"></span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span th:text="${v.tally} ? 'Yes' : 'No'"></span>
+                  </td>
+                  <td
+                    class="px-6 py-4"
+                    th:text="${v.lastUpgrade ?: 'N/A'}"
+                  ></td>
+                  <td
+                    class="px-6 py-4"
+                    th:text="${v.opportunity ?: 'N/A'}"
+                  ></td>
+                  <td class="px-6 py-4">
+                    <span th:text="${v.revisitRequired} ? 'Yes' : 'No'"></span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span th:text="${v.agreedForDemo} ? 'Yes' : 'No'"></span>
+                  </td>
+                  <td class="px-6 py-4" th:text="${v.dateFilled ?: 'N/A'}"></td>
+                  <td
+                    class="px-6 py-4"
+                    th:text="${v.employee?.name ?: 'N/A'}"
+                  ></td>
+                  <td class="px-6 py-4">
+                    <a
+                      th:href="@{'/user/visit/view/' + ${v.id}}"
+                      class="text-yellow-500 hover:underline"
+                      >Edit</a
+                    >
+                    <a
+                      th:href="@{'/user/visit/delete/' + ${v.id}}"
+                      class="text-red-500 hover:underline"
+                      >Delete</a
+                    >
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pageVisitRecord.content)}">
+                  <td colspan="17" class="px-6 py-8 text-center text-gray-500">
+                    No results found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Pagination with search params -->
+            <nav aria-label="Page navigation example" class="pt-10 pb-5">
+              <ul class="inline-flex -space-x-px text-base h-10">
+                <li th:unless="${pageVisitRecord.first}">
+                  <a
+                    th:href="@{'/user/visit?size='+${pageSize} + '&page='+${pageVisitRecord.number-1}}"
+                    class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    >Previous</a
+                  >
+                </li>
+                <li
+                  th:each="i : ${#numbers.sequence(0, pageVisitRecord.totalPages - 1)}"
+                >
+                  <a
+                    th:href="@{'/user/visit?size='+${pageSize} + '&page='+${i}}"
+                    th:text="${i + 1}"
+                    th:classappend="${i == pageVisitRecord.number} ? 'text-2xl font-bold border border-gray-600' : 'bg-gray-100'"
+                    class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                  ></a>
+                </li>
+                <li th:unless="${pageVisitRecord.last}">
+                  <a
+                    th:href="@{'/user/visit?size='+${pageSize} + '&page='+${pageVisitRecord.number+1}}"
+                    class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                    >Next</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/@linways/table-to-excel@1.0.4/dist/tableToExcel.min.js"></script>
+      <script>
+        function exportData() {
+          TableToExcel.convert(document.getElementById("visit_table"), {
+            name: "visit_records.xlsx",
+            sheet: { name: "Sheet 1" },
+          });
+        }
+      </script>
+    </div>
+  </body>
+</html>

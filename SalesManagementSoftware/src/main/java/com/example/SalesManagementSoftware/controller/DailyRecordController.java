@@ -110,7 +110,7 @@ public class DailyRecordController {
                                @RequestParam(defaultValue = "0") int page,
                                @RequestParam(defaultValue = "" + AppConstants.PAGE_SIZE) int size,
                                @RequestParam(defaultValue = "employeeId") String sortBy,
-                               @RequestParam(defaultValue = "asc") String direction) {
+                               @RequestParam(defaultValue = "desc") String direction) {
 
         String email = Helper.getEmailOfLoggedInUser(authentication);
         Employee user = userService.getUserByEmail(email);

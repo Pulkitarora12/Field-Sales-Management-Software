@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.SalesManagementSoftware.entity.Employee;
 import com.example.SalesManagementSoftware.entity.Role;
 import com.example.SalesManagementSoftware.repository.PageRepository;
+import com.example.SalesManagementSoftware.services.VisitRecordService;
 
 @SpringBootApplication
 @RestController
@@ -24,6 +25,9 @@ public class SalesManagementSoftwareApplication extends SpringBootServletInitial
 
     @Autowired
     private PasswordEncoder encoder;
+
+    @Autowired
+    private VisitRecordService visitRecordService;
 
     public static void main(String[] args) {
         SpringApplication.run(SalesManagementSoftwareApplication.class, args);
@@ -51,5 +55,13 @@ public class SalesManagementSoftwareApplication extends SpringBootServletInitial
             repo.save(emp);
             System.out.println("User created");
         });
+
+        // Sync and backpopulate daily reports
+        try {
+            visitRecordService.syncDailyRecords();
+            System.out.println("Daily reports synced successfully on startup");
+        } catch (Exception e) {
+            System.err.println("Failed to sync daily records on startup: " + e.getMessage());
+        }
     }
 }

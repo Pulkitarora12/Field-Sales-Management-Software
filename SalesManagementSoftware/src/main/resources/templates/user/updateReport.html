@@ -166,19 +166,55 @@
                     ></p>
                   </div>
 
+                  <!-- Email -->
+                  <div>
+                    <label
+                      for="email"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >Email</label>
+                    <input
+                      type="text"
+                      id="email"
+                      th:field="*{email}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      placeholder="ab@gmail.com"
+                    />
+                    <p
+                      class="text-orange-600 py-2 px-1 text-xs"
+                      th:if="${#fields.hasErrors('email')}"
+                      th:errors="*{email}"
+                    ></p>
+                  </div>
+
                   <!--Nature of Business-->
                   <div>
                     <label
                       for="natureOfBusiness"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Nature of Business *</label
-                    >
-                    <input
-                      type="text"
+                    >Nature of Business *</label>
+                    <select
                       id="natureOfBusiness"
                       th:field="*{natureOfBusiness}"
                       class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Trading, Manufacturing, etc."
+                      onchange="handleNatureOfBusinessChange(this)"
+                    >
+                      <option value="">-- Select Nature of Business --</option>
+                      <option value="Manufacture">Manufacture</option>
+                      <option value="Retailer">Retailer</option>
+                      <option value="Wholesaler">Wholesaler</option>
+                      <option value="CA">CA</option>
+                      <option value="Advocate">Advocate</option>
+                      <option value="Proprietor">Proprietor</option>
+                      <option value="TaxPartner">Tax Partner</option>
+                      <option value="PvtLtd">Pvt Ltd</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <input
+                      type="text"
+                      id="otherBusinessInput"
+                      th:field="*{otherNatureOfBusiness}"
+                      placeholder="Please specify"
+                      class="hidden mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                     <p
                       class="text-orange-600 py-2 px-1 text-xs"
@@ -223,6 +259,7 @@
                         th:field="*{revisitRequired}"
                         class="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                         id="revisitRequired"
+                        onchange="handleDateOfRevisit(this)"
                       />
                       <label
                         for="revisitRequired"
@@ -230,6 +267,13 @@
                         >Revisit Required</label
                       >
                     </div>
+
+                    <input
+                      type="date"
+                      id="dateOfRevisit"
+                      th:field="*{dateOfRevisit}"  
+                      class="hidden mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
 
                     <div class="flex items-center">
                       <input
@@ -246,7 +290,26 @@
                     </div>
                   </div>
 
-                  <!--Last Upgrade - REMOVE REQUIRED-->
+                  <!-- Other Softwares -->
+                  <div>
+                    <label
+                      for="otherSoftwares"
+                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                    >Other Softwares</label>
+                    <select
+                      id="otherSoftwares"
+                      th:field="*{otherSoftwares}"
+                      class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    >
+                      <option value="">-- Other Softwares --</option>
+                      <option value="Busy">Busy</option>
+                      <option value="Mark">Mark</option>
+                      <option value="Vypar">Vypar</option>
+                      <option value="Wave">Wave</option>
+                    </select>
+                  </div>
+
+                  <!--Last Upgrade-->
                   <div>
                     <label
                       for="lastUpgrade"
@@ -257,11 +320,19 @@
                       type="date"
                       id="lastUpgrade"
                       th:field="*{lastUpgrade}"
+                      onchange="handleLastUpgradeChange(this)"
                       class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
+                    <input
+                      type="text"
+                      id="serialNumberInput"
+                      th:field="*{serialNumber}"
+                      placeholder="Enter Serial Number"
+                      class="hidden mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                   </div>
 
-                  <!--Opportunity - Convert to Select-->
+                  <!--Opportunity-->
                   <div>
                     <label
                       for="opportunity"
@@ -272,6 +343,7 @@
                       id="opportunity"
                       th:field="*{opportunity}"
                       class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      onchange="handleOpportunityChange(this)"
                     >
                       <option value="">-- Select Opportunity --</option>
                       <option value="None">None</option>
@@ -280,11 +352,32 @@
                       <option value="TSS">TSS</option>
                       <option value="Service">Service</option>
                       <option value="Customization">Customization</option>
+                      <option value="Other">Other</option>
                     </select>
+                    <input
+                      type="text"
+                      id="otherOpportunityInput"
+                      th:field="*{otherOpportunities}"  
+                      placeholder="Enter other opportunity"
+                      class="hidden mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
                   </div>
 
-                  <!-- Dynamic Custom Fields -->
-                  <div id="customFieldsContainer" class="mb-3"></div>
+                  <!-- Dynamic Custom Fields Container -->
+                  <div id="customFieldsContainer" class="mb-3">
+                      <!-- Loop over existing custom fields -->
+                      <div th:each="entry, stat : ${record != null ? record.customFields : null}" 
+                           class="mb-3 border p-3 rounded-lg bg-gray-700" 
+                           th:data-field-id="${stat.index}">
+                          <label class="block mb-2 text-sm font-medium text-white">Custom Field Label</label>
+                          <input type="text" name="customLabels[]" th:value="${entry.key}" placeholder="Enter field label" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"/>
+
+                          <label class="block mb-2 text-sm font-medium text-white">Custom Field Value</label>
+                          <input type="text" name="customValues[]" th:value="${entry.value}" placeholder="Enter field value" class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"/>
+
+                          <button type="button" class="bg-red-500 text-white px-2 py-1 rounded" th:onclick="'removeCustomField(' + ${stat.index} + ')'">Remove</button>
+                      </div>
+                  </div>
 
                   <!-- Add Field Button -->
                   <div class="mb-3">
@@ -304,30 +397,45 @@
                   </div>
                 </div>
               </form>
+          </div>
         </div>
       </div>
-    </div>
 
-    <script>
-      console.log("Add visit record page script loaded");
-    </script>
-    <script>
-      let fieldCount = 0;
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+      // Initialize field count based on preloaded custom fields size
+      let fieldCount = /*[[${record != null ? record.customFields.size() : 0}]]*/ 0;
+      /*]]>*/
+
+      document.addEventListener("DOMContentLoaded", function() {
+          // Trigger show/hide on page load for pre-populated values
+          const natureSelect = document.getElementById("natureOfBusiness");
+          if (natureSelect) handleNatureOfBusinessChange(natureSelect);
+
+          const revisitCheckbox = document.getElementById("revisitRequired");
+          if (revisitCheckbox) handleDateOfRevisit(revisitCheckbox);
+
+          const lastUpgradeInput = document.getElementById("lastUpgrade");
+          if (lastUpgradeInput) handleLastUpgradeChange(lastUpgradeInput);
+
+          const opportunitySelect = document.getElementById("opportunity");
+          if (opportunitySelect) handleOpportunityChange(opportunitySelect);
+      });
 
       function addCustomField() {
           fieldCount++;
           const container = document.getElementById("customFieldsContainer");
 
           const fieldDiv = document.createElement("div");
-          fieldDiv.classList.add("mb-3", "border", "p-3", "rounded-lg", "bg-gray-100");
+          fieldDiv.classList.add("mb-3", "border", "p-3", "rounded-lg", "bg-gray-700");
           fieldDiv.setAttribute("data-field-id", fieldCount);
 
           fieldDiv.innerHTML = `
-              <label class="block mb-2 text-sm font-medium text-gray-900">Custom Field Label</label>
-              <input type="text" name="customLabels[]" placeholder="Enter field label" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full"/>
+              <label class="block mb-2 text-sm font-medium text-white">Custom Field Label</label>
+              <input type="text" name="customLabels[]" placeholder="Enter field label" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full text-gray-900 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"/>
 
-              <label class="block mb-2 text-sm font-medium text-gray-900">Custom Field Value</label>
-              <input type="text" name="customValues[]" placeholder="Enter field value" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full"/>
+              <label class="block mb-2 text-sm font-medium text-white">Custom Field Value</label>
+              <input type="text" name="customValues[]" placeholder="Enter field value" class="mb-2 bg-gray-50 border border-gray-300 rounded-lg p-2.5 w-full text-gray-900 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"/>
 
               <button type="button" class="bg-red-500 text-white px-2 py-1 rounded" onclick="removeCustomField(${fieldCount})">Remove</button>
           `;
@@ -335,9 +443,55 @@
           container.appendChild(fieldDiv);
       }
 
+      function handleOpportunityChange(selectEl) {
+          const otherInput = document.getElementById("otherOpportunityInput");
+
+          if (selectEl.value === "Other") {
+            otherInput.classList.remove("hidden");
+          } else {
+            otherInput.classList.add("hidden");
+            otherInput.value = ""; // clear when not needed
+          }
+        }
+
+      function handleNatureOfBusinessChange(selectEl) {
+          const otherInput = document.getElementById("otherBusinessInput");
+
+          if (selectEl.value === "Other") {
+              otherInput.classList.remove("hidden");
+          } else {
+              otherInput.classList.add("hidden");
+              otherInput.value = ""; // clear when not needed
+          }
+      }
+
+      function handleDateOfRevisit(checkboxEl) {
+          const dateInput = document.getElementById("dateOfRevisit");
+
+          if (checkboxEl.checked) {  
+            dateInput.classList.remove("hidden");
+          } else {
+            dateInput.classList.add("hidden");
+            dateInput.value = ""; // clear when not needed
+          }
+      }
+
       function removeCustomField(id) {
           const fieldDiv = document.querySelector(`[data-field-id='${id}']`);
-          if (fieldDiv) fieldDiv.remove();
+          if (fieldDiv) {
+              fieldDiv.remove();
+          }
+      }
+
+      function handleLastUpgradeChange(dateEl) {
+          const serialInput = document.getElementById("serialNumberInput");
+
+          if (dateEl.value) {  // If date selected
+              serialInput.classList.remove("hidden");
+          } else {  // If cleared
+              serialInput.classList.add("hidden");
+              serialInput.value = ""; // clear field
+          }
       }
     </script>
   </body>

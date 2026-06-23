@@ -13,10 +13,113 @@
       href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
-      <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
-    <link rel="stylesheet" th:href="@{'css/style.css'}" />
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{'/style.css'}" />
+    
+    <style>
+      /* Collapsible Sidebar & Layout Styles */
+      aside#default-sidebar {
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Desktop layout behavior */
+      @media (min-width: 640px) {
+        /* Default state: sidebar is visible, so shift content by 16rem (256px) if logged-in */
+        body.logged-in #content, 
+        body.logged-in #main-content, 
+        body.logged-in #profile-content {
+          padding-left: 16rem !important;
+          transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Collapsed state: hide sidebar and remove padding */
+        body.logged-in.sidebar-collapsed aside#default-sidebar {
+          transform: translateX(-100%) !important;
+        }
+        body.logged-in.sidebar-collapsed #content,
+        body.logged-in.sidebar-collapsed #main-content,
+        body.logged-in.sidebar-collapsed #profile-content {
+          padding-left: 1.5rem !important;
+        }
+      }
+
+      /* Mobile layout behavior */
+      @media (max-width: 639px) {
+        aside#default-sidebar {
+          transform: translateX(-100%);
+        }
+        /* When toggled open on mobile */
+        body.sidebar-open-mobile aside#default-sidebar {
+          transform: translateX(0) !important;
+          width: 16rem !important;
+        }
+        /* Mobile content padding */
+        body.logged-in #content, 
+        body.logged-in #main-content, 
+        body.logged-in #profile-content {
+          padding-left: 0.75rem !important;
+          padding-right: 0.75rem !important;
+        }
+      }
+
+      /* Reset redundant local shift paddings on elements inside the content container */
+      body.logged-in #content .lg\:pl-66,
+      body.logged-in #content .sm\:pl-66,
+      body.logged-in #content .pl-66,
+      body.logged-in #content .pl-5,
+      body.logged-in #main-content .lg\:pl-66,
+      body.logged-in #main-content .sm\:pl-66,
+      body.logged-in #main-content .pl-66,
+      body.logged-in #profile-content.sm\:pl-66 {
+        padding-left: 0 !important;
+      }
+
+      /* Sidebar dimming / mobile overlay backdrop */
+      #sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+        z-index: 35; /* behind sidebar (40) but above navbar (30) */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+      }
+      body.sidebar-open-mobile #sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      
+      /* Toggle button shifting based on sidebar state */
+      #sidebar-toggle-btn {
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      @media (min-width: 640px) {
+        body.logged-in:not(.sidebar-collapsed) #sidebar-toggle-btn {
+          margin-left: 16rem !important;
+        }
+        body.logged-in.sidebar-collapsed #sidebar-toggle-btn {
+          margin-left: 1rem !important;
+        }
+      }
+      
+      /* Make sure tables are fully responsive and scroll horizontally on small screens */
+      .visits_container, .relative.overflow-x-auto {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+      }
+      table {
+        width: 100% !important;
+      }
+    </style>
   </head>
-  <body class="bg-gray-900">
+  <body class="bg-gray-900" th:classappend="${loggedInUser != null and loggedInUser.enabled} ? 'logged-in' : ''">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div id="sidebar-overlay"></div>
+
     <!--handeling navbar-->
 
     <!--user logged in ?-->
@@ -38,5 +141,47 @@
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <th:block th:replace="${script}"></th:block>
+
+    <!-- Collapsible Sidebar Controller -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleBtn = document.getElementById("sidebar-toggle-btn");
+        const overlay = document.getElementById("sidebar-overlay");
+        const sidebar = document.getElementById("default-sidebar");
+
+        // Load initial state from localStorage (only on desktop >= 640px)
+        if (window.innerWidth >= 640) {
+          const sidebarState = localStorage.getItem("sidebar-state");
+          if (sidebarState === "collapsed") {
+            document.body.classList.add("sidebar-collapsed");
+          }
+        }
+
+        function toggleSidebar() {
+          if (window.innerWidth >= 640) {
+            // Desktop: toggle collapsed state
+            document.body.classList.toggle("sidebar-collapsed");
+            if (document.body.classList.contains("sidebar-collapsed")) {
+              localStorage.setItem("sidebar-state", "collapsed");
+            } else {
+              localStorage.setItem("sidebar-state", "expanded");
+            }
+          } else {
+            // Mobile: toggle mobile drawer state
+            document.body.classList.toggle("sidebar-open-mobile");
+          }
+        }
+
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", toggleSidebar);
+        }
+
+        if (overlay) {
+          overlay.addEventListener("click", function () {
+            document.body.classList.remove("sidebar-open-mobile");
+          });
+        }
+      });
+    </script>
   </body>
 </html>

@@ -146,7 +146,7 @@ public class VisitReportController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "" + AppConstants.PAGE_SIZE) int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "desc") String direction
     ) {
         // 1. Get logged-in user
         String email = Helper.getEmailOfLoggedInUser(authentication);
@@ -184,7 +184,7 @@ public class VisitReportController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "" + AppConstants.PAGE_SIZE) int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "desc") String direction
     ) {
         // 1. Get logged-in user
         logger.info("field {} keyword {}", field, keyword);
@@ -270,17 +270,24 @@ public class VisitReportController {
         form.setAgreedForDemo(record.getAgreedForDemo());
         form.setOtherOpportunities(record.getOtherOpportunities());
         form.setDateOfRevisit(record.getDateOfRevisit());
+        form.setEmail(record.getEmail());
+        form.setSerialNumber(record.getSerialNumber());
+        form.setOtherSoftwares(record.getOtherSoftwares());
+        form.setOtherNatureOfBusiness(record.getOtherNatureOfBusiness());
 
         model.addAttribute("form", form);
+        model.addAttribute("record", record);
         model.addAttribute("id", id); 
 
         return "user/updateReport";
     }
 
-    @GetMapping("/user/visit/update/{id}")
+    @PostMapping("/update/{id}")
     public String updateVisitRecord (@ModelAttribute @Valid VisitRecordForm form,
-                            @PathVariable Long id,
                             BindingResult result,
+                            @PathVariable Long id,
+                            @RequestParam(required = false) List<String> customLabels,
+                            @RequestParam(required = false) List<String> customValues,
                             Authentication authentication,
                             HttpSession session,
                             Model model) {
@@ -293,8 +300,11 @@ public class VisitReportController {
                 }
             });
             model.addAttribute("form", form);
+            model.addAttribute("id", id);
+            var record = service.getById(id);
+            model.addAttribute("record", record);
             model.addAttribute("message", "Please resolve the errors");
-            return "user/updateVisitRecord";  // better than "addVisitRecord"
+            return "user/updateReport";
         }
 
         String email = Helper.getEmailOfLoggedInUser(authentication);
@@ -329,10 +339,21 @@ public class VisitReportController {
         record.setOtherOpportunities(form.getOtherOpportunities());
         record.setEmployee(emp);
         record.setDateOfRevisit(form.getDateOfRevisit());
+        record.setEmail(form.getEmail());
+        record.setSerialNumber(form.getSerialNumber());
+        record.setOtherSoftwares(form.getOtherSoftwares());
+        record.setOtherNatureOfBusiness(form.getOtherNatureOfBusiness());
+
+        if (customLabels != null && customValues != null && customLabels.size() == customValues.size()) {
+            for (int i = 0; i < customLabels.size(); i++) {
+                record.getCustomFields().put(customLabels.get(i), customValues.get(i));
+            }
+        }
 
         service.update(record);
+        session.setAttribute("message", "Visit record updated successfully");
 
-        return "user/reports";
+        return "redirect:/user/visit";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -342,7 +363,7 @@ public class VisitReportController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "" + AppConstants.PAGE_SIZE) int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue = "desc") String direction
     ) {
         // 1. Fetch all visit records with pagination
         Page<VisitRecord> pageVisitRecord = service.getAll(page, size, sortBy, direction);

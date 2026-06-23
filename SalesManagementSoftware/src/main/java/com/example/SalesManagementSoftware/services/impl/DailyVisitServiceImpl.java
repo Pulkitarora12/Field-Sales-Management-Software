@@ -20,10 +20,17 @@ public class DailyVisitServiceImpl implements DailyVisitService {
     @Autowired
     private DailyVisitRepo dailyVisitRepo;
 
+    @Override
     public void save(DailyRecord dailyRecord) {
         dailyVisitRepo.save(dailyRecord);
     }
 
+    @Override
+    public void delete(DailyRecord dailyRecord) {
+        dailyVisitRepo.delete(dailyRecord);
+    }
+
+    @Override
     public void update(DailyRecord dailyRecord, LocalDate date) {
         Employee emp = dailyRecord.getScoutName();
         DailyRecord record = dailyVisitRepo.findByScoutNameAndDateFilled(emp, date).orElse(null);

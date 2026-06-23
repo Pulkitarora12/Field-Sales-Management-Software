@@ -10,6 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.Instant;
+import com.example.SalesManagementSoftware.entity.DailyRecord;
+import com.example.SalesManagementSoftware.services.DailyVisitService;
 import com.example.SalesManagementSoftware.Helper.ResourceNotFoundException;
 import com.example.SalesManagementSoftware.entity.Employee;
 import com.example.SalesManagementSoftware.entity.VisitRecord;
@@ -22,16 +27,59 @@ public class VisitRecordServiceImpl implements VisitRecordService {
     @Autowired
     private VisitRecordRepository repo;
 
+    @Autowired
+    private DailyVisitService dailyVisitService;
+
+    private void updateDailyRecord(Employee employee, LocalDate date) {
+        if (employee == null || date == null) return;
+        
+        long totalVisits = dailyVisitService.getTotalVisits(date, employee);
+        
+        if (totalVisits == 0) {
+            dailyVisitService.getDailyRecord(date, employee).ifPresent(record -> {
+                dailyVisitService.delete(record);
+            });
+            return;
+        }
+        
+        long tallyChecked = dailyVisitService.getTallyChecked(date, employee);
+        long agreedForDemo = dailyVisitService.getAgreedForDemo(date, employee);
+        long newLicense = dailyVisitService.getNewLicense(date, employee);
+        long otherOpportunities = dailyVisitService.getOtherOpportunties(date, employee);
+        
+        DailyRecord record = dailyVisitService.getDailyRecord(date, employee)
+                .orElse(new DailyRecord());
+        
+        record.setScoutName(employee);
+        record.setDateFilled(date);
+        record.setNoOfCompaniesVisited(totalVisits);
+        record.setNoOfCompaniesUsingTally(tallyChecked);
+        record.setNoOfDemoAgreed(agreedForDemo);
+        record.setProspectForNewLicense(newLicense);
+        record.setOtherOpportunities(otherOpportunities);
+        
+        dailyVisitService.save(record);
+    }
+
     @Override
     public VisitRecord save(VisitRecord visitRecord) {
-
-        return repo.save(visitRecord);
+        VisitRecord saved = repo.saveAndFlush(visitRecord);
+        LocalDate date = saved.getDateFilled() != null 
+            ? Instant.ofEpochMilli(saved.getDateFilled().getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
+            : LocalDate.now();
+        updateDailyRecord(saved.getEmployee(), date);
+        return saved;
     }
 
     @Override
     public VisitRecord update(VisitRecord visitRecord) {
         VisitRecord existing = repo.findById(visitRecord.getId())
             .orElseThrow(() -> new RuntimeException("VisitRecord not found with id " + visitRecord.getId()));
+
+        Employee oldEmployee = existing.getEmployee();
+        LocalDate oldDate = existing.getDateFilled() != null 
+            ? Instant.ofEpochMilli(existing.getDateFilled().getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
+            : LocalDate.now();
 
         // copy updated fields
         existing.setCompanyName(visitRecord.getCompanyName());
@@ -50,7 +98,19 @@ public class VisitRecordServiceImpl implements VisitRecordService {
         existing.setEmployee(visitRecord.getEmployee());
         existing.setOtherOpportunities(visitRecord.getOtherOpportunities());
 
-        return repo.save(existing);
+        VisitRecord updated = repo.saveAndFlush(existing);
+        
+        LocalDate newDate = updated.getDateFilled() != null 
+            ? Instant.ofEpochMilli(updated.getDateFilled().getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
+            : LocalDate.now();
+            
+        updateDailyRecord(updated.getEmployee(), newDate);
+        
+        if (!oldDate.equals(newDate) || (oldEmployee != null && !oldEmployee.equals(updated.getEmployee()))) {
+            updateDailyRecord(oldEmployee, oldDate);
+        }
+
+        return updated;
     }
 
     @Override
@@ -66,7 +126,15 @@ public class VisitRecordServiceImpl implements VisitRecordService {
     @Override
     public void delete(Long id) {
         VisitRecord record = repo.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Employee employee = record.getEmployee();
+        LocalDate date = record.getDateFilled() != null 
+            ? Instant.ofEpochMilli(record.getDateFilled().getTime()).atZone(ZoneId.systemDefault()).toLocalDate()
+            : LocalDate.now();
+            
         repo.delete(record);
+        repo.flush();
+        
+        updateDailyRecord(employee, date);
     }
 
     @Override
@@ -182,6 +250,17 @@ public class VisitRecordServiceImpl implements VisitRecordService {
                                                   : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
         return repo.findAll(pageable);
+    }
+
+    @Override
+    public void syncDailyRecords() {
+        List<VisitRecord> allRecords = repo.findAll();
+        for (VisitRecord vr : allRecords) {
+            if (vr.getEmployee() != null && vr.getDateFilled() != null) {
+                LocalDate date = Instant.ofEpochMilli(vr.getDateFilled().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+                updateDailyRecord(vr.getEmployee(), date);
+            }
+        }
     }
 }
 

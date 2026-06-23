@@ -51,4 +51,6 @@ public interface VisitRecordService {
     Page<VisitRecord> getByEmployee(Employee user, int page, int size, String sortBy, String direction);
 
     Page<VisitRecord> getAll(int page, int size, String sortBy, String direction);
+
+    void syncDailyRecords();
 }

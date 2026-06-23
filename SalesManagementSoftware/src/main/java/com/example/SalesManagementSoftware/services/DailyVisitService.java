@@ -26,6 +26,10 @@ public interface DailyVisitService {
 
     Optional<DailyRecord> getDailyRecord(LocalDate date, Employee employee);
 
+    void save(DailyRecord record);
+
+    void delete(DailyRecord record);
+
     void update(DailyRecord record, LocalDate date);
 
     Page<DailyRecord> getEmployeeDailyRecord(LocalDate date, Employee employee, String sortBy, String order, int page, int size);

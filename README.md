@@ -1,5 +1,8 @@
 # Field Sales Management Software (Field Sales Tracking & Reporting App)
 
+> [!NOTE]
+> **Internship Project**: This repository was developed as part of an internship project to design and implement a robust field sales tracking and reporting system.
+
 A modern, robust web application built using **Java 21** and **Spring Boot** to enable field sales scouts, managers, and administrators to track client site visits, manage schedules, and analyze daily field sales performance.
 
 ---

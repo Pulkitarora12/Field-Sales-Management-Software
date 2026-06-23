@@ -1,6 +1,7 @@
 package com.example.SalesManagementSoftware;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,6 +30,12 @@ public class SalesManagementSoftwareApplication extends SpringBootServletInitial
     @Autowired
     private VisitRecordService visitRecordService;
 
+    @Value("${ADMIN_EMAIL}")
+    private String adminEmail;
+
+    @Value("${ADMIN_PASSWORD}")
+    private String adminPassword;
+
     public static void main(String[] args) {
         SpringApplication.run(SalesManagementSoftwareApplication.class, args);
     }
@@ -43,15 +50,15 @@ public class SalesManagementSoftwareApplication extends SpringBootServletInitial
     public void run(String... args) throws Exception {
         Employee emp = new Employee();
         emp.setRole(Role.ADMIN);
-        emp.setEmail("admin@gmail.com");
-        emp.setPassword(encoder.encode("admin"));
+        emp.setEmail(adminEmail);
+        emp.setPassword(encoder.encode(adminPassword));
         emp.setName("Admin");
         emp.setEmailVerified(true);
         emp.setEnabled(true);
         emp.setAbout("This is a dummy user");
         emp.setPhoneNumber("7894561230");
 
-        repo.findByEmail("admin@gmail.com").ifPresentOrElse(user1 -> {}, () -> {
+        repo.findByEmail(adminEmail).ifPresentOrElse(user1 -> {}, () -> {
             repo.save(emp);
             System.out.println("User created");
         });

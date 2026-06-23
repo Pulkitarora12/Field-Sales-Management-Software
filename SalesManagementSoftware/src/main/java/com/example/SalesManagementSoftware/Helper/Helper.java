@@ -50,7 +50,7 @@ public class Helper {
 
     public static String getLinkForEmailVerification(String emailToken) {
 
-        String link = "http://103.148.204.44:8080/auth/verify-email?token=" + emailToken;
+        String link = baseUrl + "/auth/verify-email?token=" + emailToken;
 
         return link;
     }
